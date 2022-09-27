@@ -41,9 +41,9 @@ print(X['Client'].unique())
 Y = list(data["Winning_Price"])
 
 #Fitting
-#grad_reg = GradientBoostingRegressor(random_state=0)
-#grad_reg.fit(X,np.log(Y))
-#pickle.dump(grad_reg, open("grad_reg.pickle.dat", "wb"))
+grad_reg = GradientBoostingRegressor(random_state=0)
+grad_reg.fit(X,np.log(Y))
+pickle.dump(grad_reg, open("grad_reg.pickle.dat", "wb"))
 #print(mean_absolute_percentage_error(Y,np.exp(grad_reg.predict(X))))
 
 #Interval Estimate
@@ -63,16 +63,26 @@ from sklearn.datasets import make_classification
 weighting = compute_class_weight(class_weight = 'balanced',classes = [0,1], y= Y2)
 class_model = [0,1]
 weight_hue = dict(zip(class_model,weighting))
-print(weight_hue)
-# log_reg = LogisticRegression(random_state=0,class_weight=weight_hue)
-# log_reg.fit(X,Y2)
-# pickle.dump(log_reg, open("log_reg.pickle.dat", "wb"))
+#print(weight_hue)
+log_reg = LogisticRegression(random_state=0,class_weight=weight_hue)
+log_reg.fit(X,Y2)
+pickle.dump(log_reg, open("log_reg.pickle.dat", "wb"))
 # Input Interface
-
+Product_name = list((data2["Product_Name"]).unique())
+Product_name.append('New Molecule')
 #Product Name
 product = st.selectbox(
      'Select the name of the product:',
-     (data2["Product_Name"]).unique())
+     (Product_name))
+print("************************* {} *************************",format(product))
+if product == 'New Molecule':
+    product = st.text_input('New Molecule', 'Abilify')
+    product_dict = {product:'22-04-2017'}
+    innovator_price = 15.6
+
+else:
+    pass
+print("*******After Product Condition*******",product,"**********************")
 #Tender Type
 tender_type = st.selectbox(
      'Select type of the Tender:',
@@ -86,7 +96,7 @@ else:
 
 #Client
 client = st.text_input('Client Name', 'ASUR MARCHE')
-print(client)
+#print(client)
 if client in top_clients:
     client = 1
 else:
@@ -113,8 +123,10 @@ prv_win_pr = st.number_input('Insert the previous winning Price')
 # Months since generic entry
 #dictionary
 date_dict = dict(zip(data2["Product_Name"],data2["Generic Entry"]))
+date_dict.update(product_dict)
+print("Printing Date_Dict to test date",date_dict)
 date = date_dict.get(product)
-#print(date)
+print('Printing Date: ',date)
 #Date format conversion
 date = datetime.datetime.strptime(date, "%d-%m-%Y")
 date = date.date()
